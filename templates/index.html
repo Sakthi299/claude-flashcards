@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Thought Today - Motivational Flashcards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Summer background for entire page */
+        .page-background {
+            background: url('/static/summer.jpg') center/cover fixed;
+        }
+
+        /* Simple smooth fade animation */
+        .card-container {
+            perspective: none;
+            height: auto;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-flip {
+            transition: opacity 0.5s ease-in-out;
+            transform-style: initial;
+            opacity: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-flip.flip-out {
+            opacity: 0;
+        }
+
+        .card-flip.flip-in {
+            opacity: 1;
+        }
+
+        /* Date header styling */
+        .date-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        /* Quote content styling */
+        .quote-content {
+            background: white;
+            padding: 2rem 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Back side of card */
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Card hover effects */
+        .card-container:hover .card-flip {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        /* Navigation buttons */
+        .nav-btn {
+            transition: all 0.3s ease;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 3vw, 1.5rem);
+        }
+        .nav-btn:hover {
+            transform: scale(1.05);
+        }
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+{% set quarter = (today.month - 1) // 3 %}
+<body class="min-h-screen font-sans text-slate-800 m-0 p-0 page-background">
+    <!-- Summer Background -->
+    <div class="page-background" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1;"></div>
+
+    <div class="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-2xl flex flex-col items-center justify-center min-h-screen" style="position: relative; z-index: 1;">
+        <!-- Header -->
+        <header class="text-center mb-6 sm:mb-8 animate-fade-in w-full">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-white mb-2 drop-shadow-lg">One Thought Today</h1>
+            <p class="text-base sm:text-lg text-white/90 drop-shadow-md">Reflections for everyday living</p>
+        </header>
+
+        <!-- Main Card -->
+        <main class="card-container bg-white/95 backdrop-blur-sm w-full" style="max-width: 600px;">
+            <div class="card-flip">
+                <!-- Date Header -->
+                <div class="date-header">
+                    <h2 class="text-xl sm:text-2xl font-medium text-left font-serif" id="current-date">{{ today_date }}</h2>
+                    <p class="text-xs sm:text-sm text-white/90 mt-2 day-of-year text-left">Day {{ day_of_year }} of 2026</p>
+                </div>
+
+                <!-- Card Content -->
+                <div class="quote-content text-center">
+                    <blockquote class="mb-6 sm:mb-8">
+                        <p class="text-lg sm:text-2xl md:text-3xl font-serif leading-relaxed text-slate-800 font-semibold">
+                            "{{ card.text }}"
+                        </p>
+                    </blockquote>
+
+                    <div class="border-t-2 border-purple-200 pt-4 sm:pt-6">
+                        <p class="text-sm sm:text-base text-slate-600 italic leading-relaxed">
+                            {{ card.translation }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Navigation Controls -->
+        <div class="mt-6 sm:mt-8 flex items-center gap-3 sm:gap-6 animate-fade-in w-full justify-center flex-wrap">
+            <button onclick="navigateToPrevious()" class="nav-btn flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-white text-slate-800 rounded-full shadow-lg hover:text-amber-600 transition-all">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <span class="hidden sm:inline prev-btn-text">Yesterday</span>
+            </button>
+
+            <button onclick="navigateToToday()" class="nav-btn flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-amber-600 text-white rounded-full shadow-lg hover:bg-amber-700 transition-all">
+                <svg class="w-5 h-5 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="hidden sm:inline">Today</span>
+            </button>
+
+            <button onclick="navigateToNext()" class="nav-btn flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-white text-slate-800 rounded-full shadow-lg hover:text-amber-600 transition-all">
+                <span class="hidden sm:inline next-btn-text">Tomorrow</span>
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Navigation Info -->
+        <div class="mt-4 sm:mt-6 text-center">
+            <p class="text-xs sm:text-sm text-white/70 drop-shadow-md px-4">
+                Navigate through days to gently reflect on thoughts for a focused day
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let todayDate = new Date('{{ today.strftime("%Y-%m-%d") }}');
+        let currentDate = new Date(todayDate);
+        let isFlipping = false;
+
+        // Update button text based on whether viewing today or another date
+        function updateButtonLabels() {
+            const isToday = currentDate.toDateString() === todayDate.toDateString();
+            const prevBtn = document.querySelector('.prev-btn-text');
+            const nextBtn = document.querySelector('.next-btn-text');
+            
+            if (isToday) {
+                prevBtn.textContent = 'Yesterday';
+                nextBtn.textContent = 'Tomorrow';
+            } else {
+                prevBtn.textContent = 'Earlier';
+                nextBtn.textContent = 'Later';
+            }
+        }
+
+        // Initialize button labels on page load
+        updateButtonLabels();
+
+        // Navigate to previous day with simple animation
+        async function navigateToPrevious() {
+            if (isFlipping) return;
+            const prevDate = new Date(currentDate);
+            prevDate.setDate(prevDate.getDate() - 1);
+            await slideCard(prevDate);
+        }
+
+        // Navigate to next day with simple animation
+        async function navigateToNext() {
+            if (isFlipping) return;
+            const nextDate = new Date(currentDate);
+            nextDate.setDate(nextDate.getDate() + 1);
+            await slideCard(nextDate);
+        }
+
+        // Navigate to today
+        function navigateToToday() {
+            window.location.href = '/';
+        }
+
+        // Slide card animation and load new content
+        async function slideCard(date) {
+            isFlipping = true;
+            const cardFlip = document.querySelector('.card-flip');
+            
+            // Fade out
+            cardFlip.classList.add('flip-out');
+            await new Promise(resolve => setTimeout(resolve, 250));
+            
+            // Load new content
+            await loadCard(date);
+            
+            // Fade in
+            cardFlip.classList.remove('flip-out');
+            cardFlip.classList.add('flip-in');
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            cardFlip.classList.remove('flip-in');
+            
+            isFlipping = false;
+        }
+
+        // Load card for a specific date
+        async function loadCard(date) {
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            try {
+                const response = await fetch(`/api/date/${month}/${day}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+
+                // Update card content
+                const blockquote = document.querySelector('blockquote');
+                blockquote.innerHTML = `
+                    <p class="text-2xl md:text-3xl font-serif leading-relaxed text-slate-800 font-medium">
+                        "${data.text}"
+                    </p>
+                `;
+
+                const translationDiv = blockquote.nextElementSibling;
+                translationDiv.querySelector('p').textContent = data.translation;
+
+                // Update date header
+                document.getElementById('current-date').textContent = data.date;
+                // Find and update the day of year text
+                const dayOfYearElement = document.querySelector('.day-of-year');
+                if (dayOfYearElement) {
+                    dayOfYearElement.textContent = `Day ${getDayOfYear(date)} of 2026`;
+                }
+
+                // Update current date
+                currentDate = date;
+                
+                // Update button labels
+                updateButtonLabels();
+            } catch (error) {
+                console.error('Error loading card:', error);
+            }
+        }
+
+        // Get day of year
+        function getDayOfYear(date) {
+            const start = new Date(date.getFullYear(), 0, 0);
+            const diff = date - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            return Math.floor(diff / oneDay);
+        }
+    </script>
+</body>
+</html>
