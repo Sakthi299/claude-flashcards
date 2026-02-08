@@ -4,11 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>One Thought Today - Motivational Flashcards</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', path='/favicon.svg') }}" type="image/svg+xml">
+    <link rel="shortcut icon" href="{{ url_for('static', path='/favicon.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Background Music -->
+    <audio id="bg-music" loop autoplay>
+        <source src="{{ url_for('static', path='/city_of_stars.mp3') }}" type="audio/mpeg">
+    </audio>
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', path='/favicon.svg') }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ url_for('static', path='/favicon.svg') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', path='/favicon.svg') }}">
     <style>
         /* Summer background for entire page */
         .page-background {
@@ -46,6 +59,16 @@
             color: white;
             padding: 1.5rem;
             flex-shrink: 0;
+        }
+
+        /* Music button styling */
+        .music-btn {
+            transition: all 0.3s ease;
+        }
+        .music-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         /* Quote content styling */
@@ -99,8 +122,15 @@
             <div class="card-flip">
                 <!-- Date Header -->
                 <div class="date-header">
-                    <h2 class="text-xl sm:text-2xl font-medium text-left font-serif" id="current-date">{{ today_date }}</h2>
-                    <p class="text-xs sm:text-sm text-white/90 mt-2 day-of-year text-left">Day {{ day_of_year }} of 2026</p>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-medium text-left font-serif" id="current-date">{{ today_date }}</h2>
+                            <p class="text-xs sm:text-sm text-white/90 mt-1 day-of-year text-left">Day {{ day_of_year }} of 2026</p>
+                        </div>
+                        <button onclick="toggleMusic()" class="music-btn p-3 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-300" title="Toggle Music">
+                            <i id="music-icon" class="fas fa-music text-white text-2xl"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Card Content -->
@@ -156,6 +186,21 @@
         let todayDate = new Date('{{ today.strftime("%Y-%m-%d") }}');
         let currentDate = new Date(todayDate);
         let isFlipping = false;
+        let musicPlaying = true;
+
+        // Toggle music playback
+        function toggleMusic() {
+            const audio = document.getElementById('bg-music');
+            if (!audio) return;
+
+            if (musicPlaying) {
+                audio.pause();
+                musicPlaying = false;
+            } else {
+                audio.play();
+                musicPlaying = true;
+            }
+        }
 
         // Update button text based on whether viewing today or another date
         function updateButtonLabels() {

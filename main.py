@@ -140,6 +140,15 @@ async def get_quote_of_day():
     return await get_today()
 
 
+@app.get("/favicon.ico")
+async def favicon():
+    """Return SVG favicon for browser requests."""
+    return HTMLResponse(
+        content='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3v9.28c-.55.25-1 .75-1 1.44 0 1.1.9 2 2 2s2-.9 2-2c0-.69-.45-1.19-1-1.44V3h1zM17 3v10.55c0 2.21-1.79 4-4 4s-4-1.79-4-4V3h8z" fill="#d97706"/></svg>',
+        media_type="image/svg+xml"
+    )
+
+
 if __name__ == "__main__":
     import uvicorn
 
