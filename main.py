@@ -6,6 +6,7 @@ from pydantic import BaseModel
 import json
 import calendar
 from datetime import datetime
+import pytz
 
 app = FastAPI(title="Daily Motivation - Flashcards")
 
@@ -14,6 +15,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Setup templates
 templates = Jinja2Templates(directory="templates")
+
+# Use Asia/Kolkata timezone (IST) for all date operations
+IST = pytz.timezone("Asia/Kolkata")
 
 
 def load_motivation_data():
@@ -24,14 +28,16 @@ def load_motivation_data():
 
 def get_day_of_year(date: datetime) -> int:
     """Calculate day of year (1-365)."""
-    start_of_year = datetime(date.year, 1, 1)
-    return (date - start_of_year).days + 1
+    # Convert to date to get the date part (handles timezone-aware datetime)
+    date_only = date if not date.tzinfo else date.astimezone(IST).date()
+    start_of_year = datetime(date_only.year, 1, 1, tzinfo=IST).date()
+    return (date_only - start_of_year).days + 1
 
 
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request):
     """Display today's motivation card."""
-    today = datetime.now()
+    today = datetime.now(IST)
     data = load_motivation_data()
     day_of_year = get_day_of_year(today)
     today_date = today.strftime("%A, %B %d, %Y")
@@ -69,7 +75,7 @@ class CardResponse(BaseModel):
 @app.get("/api/today", response_model=CardResponse)
 async def get_today():
     """API endpoint for today's motivation card."""
-    today = datetime.now()
+    today = datetime.now(IST)
     data = load_motivation_data()
 
     month_str = f"{today.month:02d}"
