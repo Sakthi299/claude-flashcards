@@ -4,7 +4,7 @@ A web application that serves daily motivational quotes with translations, organ
 
 ## Overview
 
-This FastAPI-based application displays motivational quotes in a flashcard format. Each day features a unique quote with an English translation and philosophical references.
+This FastAPI-based application displays motivational quotes in a flashcard format. Each day features a unique quote with an English translation.
 
 ## Features
 
@@ -55,9 +55,7 @@ Quotes are stored in `data/daily_motivation.json` with the format:
     "01": {
       "01": {
         "text": "Quote text...",
-        "translation": "English translation...",
-        "chapter": 12,
-        "verse": 13
+        "translation": "English translation..."
       }
     }
   }

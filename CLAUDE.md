@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Daily Motivation Flashcards** web application built with FastAPI. It serves daily motivational quotes with translations, organized by date (day of year). The quotes include philosophical wisdom with chapter/verse references.
+This is a **Daily Motivation Flashcards** web application built with FastAPI. It serves daily motivational quotes with translations, organized by date (day of year).
 
 ## Architecture
 
@@ -33,7 +33,7 @@ The `daily_motivation.json` contains quotes organized by year → month → day:
 ```json
 {
   "2026": {
-    "01": { "01": { "text": "...", "translation": "...", "chapter": 12, "verse": 13 } }
+    "01": { "01": { "text": "...", "translation": "..." } }
   }
 }
 ```
